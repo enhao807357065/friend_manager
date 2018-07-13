@@ -15,6 +15,17 @@ func GetUserByUnionId(unionId string) (*models.User, error) {
 	return user, err
 }
 
+func GetUserByOpenId(openId string) (*models.User, error) {
+
+	user := &models.User{}
+	has, err := Ormer().Where("openid = ?", openId).Get(user)
+	if !has {
+		return nil, nil
+	}
+
+	return user, err
+}
+
 func GetUserByUserId(userId int64) (*models.User, error) {
 
 	user := &models.User{}

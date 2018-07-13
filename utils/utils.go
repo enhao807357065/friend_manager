@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"friend-manager-server/models"
 	"github.com/bitly/go-simplejson"
-	l4g "github.com/thinkboy/log4go"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -68,14 +67,12 @@ func SendGetRequest(url string) ([]byte, error) {
 	}
 
 	response, err := client.Do(reqest) //提交
-	l4g.Info("$$$$$$$$$$$$$$$$$$$$$$$$$$: ", response, err)
 	if err != nil {
 		return nil, err
 	}
 	defer response.Body.Close()
 
 	arr, err := ioutil.ReadAll(response.Body)
-	l4g.Info("###########################: ", string(arr), err)
 	if err != nil {
 		return nil, err
 	}

@@ -41,10 +41,8 @@ func ServiceQr(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("####: ", string(bytesArr.([]byte)))
 	serviceReq := &ServiceQrReq{}
 	err := json.Unmarshal(bytesArr.([]byte), serviceReq)
-	fmt.Println("serviceReq: ", serviceReq, err)
 	if err != nil {
 		c.JSON(http.StatusOK, models.ERInvalidParams)
 		return
@@ -94,6 +92,70 @@ func ServiceQr(c *gin.Context) {
 	_, err = c.Writer.Write(body)
 
 	return
+}
+
+func ServiceQr1(c *gin.Context) {
+
+	bytesArr, has := c.Get(c.Request.RequestURI)
+	if !has {
+		c.JSON(http.StatusOK, models.ERInvalidParams)
+		return
+	}
+
+	serviceReq := &ServiceQrReq{}
+	err := json.Unmarshal(bytesArr.([]byte), serviceReq)
+	if err != nil {
+		c.JSON(http.StatusOK, models.ERInvalidParams)
+		return
+	}
+
+	if !utils.IsValidString(serviceReq.Path) {
+		c.JSON(http.StatusOK, models.ERInvalidParams)
+		return
+	}
+
+	accessToken, err := getAccessToken()
+	if err != nil {
+		l4g.Error("get access token error!")
+		c.JSON(http.StatusOK, models.ERFAIL)
+		return
+	}
+
+	url := "https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=" + accessToken
+
+	miniParam := &models.MiniQRInfo{
+		Path:  serviceReq.Path,
+		Width: serviceReq.Width,
+	}
+	paramStr, err := jsonMarchal(miniParam)
+	if err != nil {
+		l4g.Error("jsonMarchal! %v", err)
+		c.JSON(http.StatusOK, models.ERFAIL)
+		return
+	}
+
+	resp, err := http.Post(url, "", bytes.NewBuffer([]byte(paramStr)))
+	if err != nil {
+		l4g.Error("send post! %v", err)
+		c.JSON(http.StatusOK, models.ERFAIL)
+		return
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	key, _, err := UploadStream(bytes.NewReader(body), int64(len(body)))
+	//fmt.Println("key: ", key, err)
+	if err != nil {
+		l4g.Error(err)
+		c.JSON(http.StatusOK, models.ERFAIL)
+		return
+	}
+
+	retData := simplejson.New()
+	retData.Set("cd", 0)
+	retData.Set("key", key)
+
+	c.JSON(http.StatusOK, retData)
 }
 
 func FileUpload(c *gin.Context) {

@@ -31,6 +31,7 @@ func RegisterRoutes(router *gin.Engine) {
 	{
 		service.Use(Prehandle)
 		service.POST("/qr", ServiceQr)
+		service.POST("/qr1", ServiceQr1)
 	}
 
 	file := router.Group("/file/v1")

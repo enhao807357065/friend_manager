@@ -83,8 +83,8 @@ func WechatLogin(c *gin.Context) {
 			return
 		}
 
-		// 查询该unionid是否注册过
-		dbUser, err := services.GetUserByUnionId(userInfo.UnionId)
+		// 查询该openid是否注册过
+		dbUser, err := services.GetUserByOpenId(userInfo.OpenId)
 		if err != nil {
 			l4g.Error("[server]services.GetUserByUnionId error! %v", err)
 			c.JSON(http.StatusOK, models.ERFAIL)
