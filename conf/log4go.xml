@@ -1,0 +1,13 @@
+<logging>
+  <filter enabled="true">
+    <tag>file</tag>
+    <type>file</type>
+    <level>FINEST</level>
+    <property name="filename">project.log</property>
+    <property name="format">[%D %T] [%L] (%S) %M</property>
+    <property name="rotate">false</property>
+    <property name="maxsize">1M</property>
+    <property name="maxlines">2K</property>
+    <property name="daily">false</property>
+  </filter>
+</logging>
